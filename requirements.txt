@@ -1,0 +1,11 @@
+aws-cdk.core==1.32.2
+aws-cdk.aws-ec2==1.32.2
+aws-cdk.aws-ecs==1.32.2
+aws-cdk.aws-elasticloadbalancingv2==1.32.2
+aws-cdk.aws-iam==1.32.2
+aws-cdk.aws-logs==1.32.2
+aws-cdk.aws-route53==1.32.2
+mergedeep==1.1.1
+pycodestyle==2.5.0
+pytest==5.4.1
+PyYAML==5.3.1

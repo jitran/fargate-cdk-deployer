@@ -1,0 +1,66 @@
+---
+
+# All the mandatory resources: side car containers, roles, etc..
+
+# name of the container to be registered with the load balancer
+service_name: proxy
+desired_count: 1
+log_retention_days: 30
+
+execution_role_id: ExecutionRole
+log_group_id: &log_group_id LogGroup
+task_role_id: TaskRole
+
+roles:
+  ExecutionRole:
+    pull-ecr-images:
+      action:
+        - ecr:GetAuthorizationToken
+        - ecr:BatchCheckLayerAvailability
+        - ecr:GetDownloadUrlForLayer
+        - ecr:BatchGetImage
+      effect: Allow
+      resource: '*'
+    put-log-events:
+      action:
+        - logs:CreateLogStream
+        - logs:PutLogEvents
+      effect: Allow
+      resource:
+        - Fn::GetAtt: [ *log_group_id, Arn ]
+  TaskRole:
+    read-configuration-bucket:
+      action:
+        - s3:GetObject
+      effect: Allow
+      resource: TBD
+    allow-config-bucket-key-decrypt:
+      action:
+        - kms:Decrypt
+      effect: Allow
+      resource: TBD
+
+target_group_overrides: {}
+
+task_definition_overrides: {}
+
+service_overrides: {}
+
+whitelisted_actions:
+  - ecr:GetAuthorizationToken
+  - ecr:BatchCheckLayerAvailability
+  - ecr:GetDownloadUrlForLayer
+  - ecr:BatchGetImage
+  - kms:Decrypt
+  - kms:DescribeKey
+  - kms:Encrypt
+  - kms:GenerateDataKey
+  - kms:GenerateDataKeyWithoutPlaintext
+  - kms:ReEncrypt
+  - logs:CreateLogStream
+  - logs:PutLogEvents
+  - s3:DeleteObject
+  - s3:GetObject
+  - s3:ListBucket
+  - s3:PutObject
+  - ses:SendEmail

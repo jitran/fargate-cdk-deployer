@@ -1,0 +1,77 @@
+---
+
+# VPC to deploy the Fargate Container
+vpc_id: vpc-1234567890
+
+# List of security group ids that are allowed to access the Shared ALB
+ingress_security_group_ids:
+  - sg-1234567890
+
+# Name of the cloudformation cluster that hosts the Shared ECS and ALB
+# This is where the Fargate Container will be deployed to
+cluster_stack_name: fargate-cluster
+
+# The desired number of task definition instances
+desired_count: 1
+
+# The number of days to retain the CloudWatch Logs
+log_retention_days: 7
+
+# CPU and Memory allocation for the Task definition
+cpu: '1024'
+memory: '2048'
+
+# The main container that will be registered with the Shared ALB
+service_name: app
+
+# A list of url paths that are served by the load balancer's registered container
+service_paths:
+  - '/env'
+  - '/hello'
+
+# The listener priority of the main container's service paths.
+# Each tenant service of the shared cluster will need to keep track of its priority.
+service_priority: 1
+
+# These containers will exist in each Task Definition (aka daemonsets in a pod)
+containers:
+  app:
+    # The container image for your app
+    image: nginxdemos/hello:latest
+    # The app port exposed to the Task definition (and Shared ALB for the main container)
+    port: 80
+    # Environment variables can be encrypted using KMS
+    # Refer to https://github.com/realestate-com-au/shush on usage examples
+    environment:
+      ENVIRONMENT_VARIABLE1: value1
+      ENVIRONMENT_VARIABLE2: value2
+    # Task definition health check settings
+    health_check:
+      path: /hello
+      protocol: http
+      interval: 10
+      timeout: 5
+      retries: 3
+    # If there are multiple containers for the Task definition, you may need to specify a dependency on them
+    # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definitions
+    depends_on:
+    # Additional properties you'd like to override (property names must be in camel case)
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-containerdefinitions.html
+    overrides:
+
+# Extend the Task Role if your containers need additional AWS API access
+roles:
+  TaskRole:
+    send-mail:
+      action:
+        - ses:SendEmail
+      effect: Allow
+      resource: '*'
+
+# Tags for your cloudformation resources
+tags:
+  CreatedBy: team
+  CostCode: cost_code
+  BusinessDepartment: business_department
+  BusinessProduct: business_product
+  OperationalSupportTeam: support_team

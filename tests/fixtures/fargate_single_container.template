@@ -1,0 +1,240 @@
+Resources:
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 7
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Statement:
+              Action:
+                - ecr:GetAuthorizationToken
+                - ecr:BatchCheckLayerAvailability
+                - ecr:GetDownloadUrlForLayer
+                - ecr:BatchGetImage
+              Effect: Allow
+              Resource: "*"
+          PolicyName: pull-ecr-images
+        - PolicyDocument:
+            Statement:
+              Action:
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Effect: Allow
+              Resource:
+                - Fn::GetAtt:
+                    - LogGroup
+                    - Arn
+          PolicyName: put-log-events
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+      Policies:
+        - PolicyDocument:
+            Statement:
+              Action:
+                - s3:GetObject
+              Effect: Allow
+              Resource: arn:aws:s3:::config-bucket/*
+          PolicyName: read-configuration-bucket
+        - PolicyDocument:
+            Statement:
+              Action:
+                - kms:Decrypt
+              Effect: Allow
+              Resource: arn:aws:kms:ap-southeast-2:1234567890:key/abcd-efgh-ijkl-mnop
+          PolicyName: allow-config-bucket-key-decrypt
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Environment:
+            - Name: ENVIRONMENT_VARIABLE1
+              Value: value1
+            - Name: ENVIRONMENT_VARIABLE2
+              Value: value2
+          HealthCheck:
+            Command:
+              - CMD-SHELL
+              - curl -f -k http://localhost:8080/hello || exit 1
+            Interval: 10
+            Retries: 3
+            Timeout: 5
+          Image: sample-app:latest
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group:
+                Ref: LogGroup
+              awslogs-region:
+                Ref: AWS::Region
+              awslogs-stream-prefix: app
+          Name: app
+          PortMappings:
+            - ContainerPort: 8080
+      Cpu: "1024"
+      ExecutionRoleArn:
+        Ref: ExecutionRole
+      Family:
+        Ref: AWS::StackName
+      Memory: "2048"
+      NetworkMode: awsvpc
+      RequiresCompatibilities:
+        - FARGATE
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+      TaskRoleArn:
+        Ref: TaskRole
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckIntervalSeconds: 20
+      HealthCheckPath: /hello
+      HealthCheckPort: "8080"
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 3
+      Matcher:
+        HttpCode: "200"
+      Port: 8080
+      Protocol: HTTP
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+      TargetType: ip
+      UnhealthyThresholdCount: 5
+      VpcId: vpc-1234567890
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: fargate-cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 100
+      DeploymentController:
+        Type: ECS
+      DesiredCount: 1
+      LaunchType: FARGATE
+      LoadBalancers:
+        - ContainerName: app
+          ContainerPort: 8080
+          TargetGroupArn:
+            Ref: TargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - Fn::ImportValue: fargate-cluster:SharedFargateServiceSecurityGroup
+          Subnets:
+            - subnet-1234567890
+            - subnet-abcdefghij
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+      TaskDefinition:
+        Ref: TaskDefinition
+  ListenerRule:
+    Type: AWS::ElasticLoadBalancingV2::ListenerRule
+    Properties:
+      Actions:
+        - TargetGroupArn:
+            Ref: TargetGroup
+          Type: forward
+      Conditions:
+        - Field: path-pattern
+          PathPatternConfig:
+            Values:
+              - /env
+              - /hello
+      ListenerArn:
+        Fn::ImportValue: fargate-cluster:SharedLoadBalancerListener
+      Priority: 1
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - .hosted.zone.
+      Type: A
+      AliasTarget:
+        DNSName:
+          Fn::ImportValue: fargate-cluster:SharedLoadBalancerDNSName
+        HostedZoneId:
+          Fn::ImportValue: fargate-cluster:SharedLoadBalancerCanonicalHostedZoneID
+      HostedZoneName: hosted.zone.
+Outputs:
+  RecordSetName:
+    Description: Record Set Name
+    Value:
+      Fn::Join:
+        - ""
+        - - Ref: AWS::StackName
+          - .hosted.zone.
+    Export:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - :RecordSetName

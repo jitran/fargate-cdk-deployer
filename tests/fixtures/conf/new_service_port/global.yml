@@ -1,0 +1,10 @@
+---
+
+# All the mandatory resources: side car containers, roles, etc..
+
+containers:
+  proxy:
+    port: 8080
+
+# name of the container to be registered with the load balancer
+service_name: proxy

@@ -1,0 +1,155 @@
+Resources:
+  ECSCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName:
+        Ref: AWS::StackName
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+  SharedApplicationSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Shared Fargate Security Group
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+      VpcId: vpc-1234567890
+  SharedApplicationLBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Shared ALB Security Group
+      SecurityGroupEgress:
+        - DestinationSecurityGroupId:
+            Ref: SharedApplicationSecurityGroup
+          FromPort: 8443
+          IpProtocol: tcp
+          ToPort: 8443
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+      VpcId: vpc-1234567890
+  SharedApplicationSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 8443
+      GroupId:
+        Ref: SharedApplicationSecurityGroup
+      SourceSecurityGroupId:
+        Ref: SharedApplicationLBSecurityGroup
+      ToPort: 8443
+  SharedApplicationLBSecurityGroupIngress0:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      FromPort: 443
+      GroupId:
+        Ref: SharedApplicationLBSecurityGroup
+      SourceSecurityGroupId: sg-1234567890
+      ToPort: 443
+  SharedLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Scheme: internal
+      SecurityGroups:
+        - Ref: SharedApplicationLBSecurityGroup
+      Subnets:
+        - subnet-1234567890
+        - subnet-abcdefghij
+      Tags:
+        - Key: CreatedBy
+          Value: team
+        - Key: CostCode
+          Value: cost_code
+        - Key: BusinessDepartment
+          Value: business_department
+        - Key: BusinessProduct
+          Value: business_product
+        - Key: OperationalSupportTeam
+          Value: support_team
+  SharedListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - FixedResponseConfig:
+            ContentType: text/plain
+            MessageBody: You have reached the the Load Balancer, but not matched any of the listener rules
+            StatusCode: "200"
+          Type: fixed-response
+      LoadBalancerArn:
+        Ref: SharedLoadBalancer
+      Port: 443
+      Protocol: HTTPS
+      Certificates:
+        - CertificateArn: arn:aws:acm:ap-southeast-2:1234567890:certificate/abcd-efgh-ijkl-mnop
+      SslPolicy: ELBSecurityPolicy-2016-08
+Outputs:
+  SharedLoadBalancerDNSName:
+    Description: Shared Load Balancer DNS Name
+    Value:
+      Fn::GetAtt:
+        - SharedLoadBalancer
+        - DNSName
+    Export:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - :SharedLoadBalancerDNSName
+  SharedLoadBalancerCanonicalHostedZoneID:
+    Description: Shared Load Balancer Canonical Hosted Zone ID
+    Value:
+      Fn::GetAtt:
+        - SharedLoadBalancer
+        - CanonicalHostedZoneID
+    Export:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - :SharedLoadBalancerCanonicalHostedZoneID
+  SharedLoadBalancerListener:
+    Description: Shared Load Balancer Listener
+    Value:
+      Ref: SharedListener
+    Export:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - :SharedLoadBalancerListener
+  SharedFargateServiceSecurityGroup:
+    Description: Shared Fargate Security Group
+    Value:
+      Ref: SharedApplicationSecurityGroup
+    Export:
+      Name:
+        Fn::Join:
+          - ""
+          - - Ref: AWS::StackName
+            - :SharedFargateServiceSecurityGroup

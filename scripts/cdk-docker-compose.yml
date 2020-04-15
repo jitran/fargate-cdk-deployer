@@ -1,0 +1,20 @@
+version: '3'
+services:
+  cdk:
+    image: cdk:${BUILD_TAG:-latest}
+    environment:
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      # AWS_SESSION_TOKEN:
+      AWS_DEFAULT_REGION: ap-southeast-2
+      AWS_REGION: ap-southeast-2
+    volumes:
+      - ../:/cwd
+  cloud-watch-logger:
+    image: tbrock/saw@sha256:1b7a7f665283996749f1c12f3ef4dd9abee70ddc4494b1af6e52478c6cced66f
+    environment:
+      AWS_ACCESS_KEY_ID:
+      AWS_SECRET_ACCESS_KEY:
+      # AWS_SESSION_TOKEN:
+      AWS_DEFAULT_REGION: ap-southeast-2
+      AWS_REGION: ap-southeast-2

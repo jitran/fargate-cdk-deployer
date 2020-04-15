@@ -1,0 +1,48 @@
+---
+
+vpc_id: vpc-1234567890
+ingress_security_group_ids:
+  - sg-1234567890
+
+cluster_stack_name: fargate-cluster
+
+desired_count: 1
+log_retention_days: 7
+cpu: '1024'
+memory: '2048'
+service_paths:
+  - '/env'
+  - '/hello'
+service_priority: 1
+
+containers:
+  proxy:
+    health_check:
+      path: /hello
+  app:
+    image: sample-app:latest
+    port: 8080
+    environment:
+      ENVIRONMENT_VARIABLE1: value1
+      ENVIRONMENT_VARIABLE2: value2
+    health_check:
+      path: /hello
+      protocol: http
+      interval: 10
+      timeout: 5
+      retries: 3
+    depends_on:
+    overrides:
+roles:
+  TaskRole:
+    send-mail:
+      action:
+        - ses:SendEmail
+      effect: Allow
+      resource: '*'
+tags:
+  CreatedBy: team
+  CostCode: cost_code
+  BusinessDepartment: business_department
+  BusinessProduct: business_product
+  OperationalSupportTeam: support_team

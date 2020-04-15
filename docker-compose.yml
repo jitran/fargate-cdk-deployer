@@ -1,0 +1,15 @@
+version: '3'
+services:
+  cdk:
+    image: cdk:${BUILD_TAG:-latest}
+    build:
+      context: .
+      args:
+        BUILD_TAG:
+  tests:
+    image: cdk:${BUILD_TAG:-latest}
+    entrypoint: ''
+    command: /cwd/ci/ci.sh .env_docker
+    working_dir: /cwd
+    volumes:
+      - .:/cwd

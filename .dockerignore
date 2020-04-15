@@ -1,0 +1,20 @@
+*.swp
+package-lock.json
+**/__pycache__
+.pytest_cache
+.env*
+*.egg-info
+.cache
+**/*.pyc
+Dockerfile
+docker-compose.yml
+.dockerignore
+.gitignore
+.git
+ci
+scripts
+tests
+
+# CDK asset staging directory
+.cdk.staging
+*.out

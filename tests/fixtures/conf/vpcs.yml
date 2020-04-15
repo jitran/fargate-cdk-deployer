@@ -1,0 +1,26 @@
+---
+
+# Account and VPC configuration
+
+vpc-1234567890:
+  account_id: aws-account
+  vpc_name: vpc-name
+  availability_zones:
+    - ap-southeast-2a
+    - ap-southeast-2b
+  private_subnet_ids:
+    - subnet-1234567890
+    - subnet-abcdefghij
+  hosted_zone_name: hosted.zone.
+  ssl_certificate_arn: arn:aws:acm:ap-southeast-2:1234567890:certificate/abcd-efgh-ijkl-mnop
+  ssl_policy: ELBSecurityPolicy-2016-08
+  containers:
+    proxy:
+      environment:
+        ConfigBucket: config-bucket
+  roles:
+    TaskRole:
+      read-configuration-bucket:
+        resource: arn:aws:s3:::config-bucket/*
+      allow-config-bucket-key-decrypt:
+        resource: arn:aws:kms:ap-southeast-2:1234567890:key/abcd-efgh-ijkl-mnop

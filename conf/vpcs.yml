@@ -1,0 +1,26 @@
+---
+
+# Account and VPC configuration
+
+vpc-1234567890:
+  account_id: aws-account-id
+  vpc_name: vpc-name
+  # AZs and Private Subnets to host the Shared ALB and Fargate Containers
+  availability_zones:
+    - ap-southeast-2a
+    - ap-southeast-2b
+  private_subnet_ids:
+    - subnet-1234567890
+    - subnet-abcdefghij
+  # SSL settings for the Shared ALB
+  hosted_zone_name: hosted.zone.
+  ssl_certificate_arn: arn:aws:acm:ap-southeast-2:1234567890:certificate/abcd-efgh-ijkl-mnop
+  ssl_policy: ELBSecurityPolicy-2016-08
+  # Task Roles in this VPC will have access to the config-bucket specified below
+  roles:
+    TaskRole:
+      read-configuration-bucket:
+        resource: arn:aws:s3:::config-bucket/*
+
+# vpc-n:
+#   ...
