@@ -34,7 +34,7 @@ Refer to [vpcs.yml](vpcs.yml) for a detailed description of each setting.
 
 ### deploy/cluster/\<env\>.yml
 
-Contains the VPC, load balancer ingress, and application port information for building a Shared ECS Cluster and Application Load balancer.
+Contains the VPC, load balancer ingress, tags, and application port information for building a Shared ECS Cluster and Application Load balancer.
 
 This config file resides in the API repository under the deploy/cluster/ directory.
 

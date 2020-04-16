@@ -10,3 +10,11 @@ ingress_security_group_ids:
 # Application port available to the Shared ALB
 # This must match containers.<service_name>.port
 application_port: 80
+
+# Tags for your cloudformation resources
+tags:
+  CreatedBy: team
+  CostCode: cost_code
+  BusinessDepartment: business_department
+  BusinessProduct: business_product
+  OperationalSupportTeam: support_team
