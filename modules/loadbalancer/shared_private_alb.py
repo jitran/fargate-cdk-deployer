@@ -13,7 +13,7 @@ from modules.dataload.config import (
 
 class SharedPrivateALB(core.Construct):
 
-    def __init__(self, scope: core.Construct, id: str, ingress_security_group_ids, private_subnet_ids, service_port, ssl_certificate_arn, ssl_policy, vpc_id):
+    def __init__(self, scope: core.Construct, id: str, application_port, ingress_security_group_ids, private_subnet_ids, ssl_certificate_arn, ssl_policy, vpc_id):
         super().__init__(scope, id)
 
         # Use low level constructs to build security groups as it allows us to name the
@@ -32,8 +32,8 @@ class SharedPrivateALB(core.Construct):
             vpc_id=vpc_id,
             security_group_egress=[{
                 'ipProtocol': 'tcp',
-                'fromPort': service_port,
-                'toPort': service_port,
+                'fromPort': application_port,
+                'toPort': application_port,
                 'destinationSecurityGroupId': app_sg.ref
             }]
         )
@@ -43,8 +43,8 @@ class SharedPrivateALB(core.Construct):
             group_id=app_sg.ref,
             source_security_group_id=app_lb_sg.ref,
             ip_protocol='tcp',
-            from_port=service_port,
-            to_port=service_port
+            from_port=application_port,
+            to_port=application_port
         )
         for index, sg in enumerate(ingress_security_group_ids):
             ec2.CfnSecurityGroupIngress(

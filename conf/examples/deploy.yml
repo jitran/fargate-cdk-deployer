@@ -3,10 +3,6 @@
 # VPC to deploy the Fargate Container
 vpc_id: vpc-1234567890
 
-# List of security group ids that are allowed to access the Shared ALB
-ingress_security_group_ids:
-  - sg-1234567890
-
 # Name of the cloudformation cluster that hosts the Shared ECS and ALB
 # This is where the Fargate Container will be deployed to
 cluster_stack_name: fargate-cluster

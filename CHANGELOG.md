@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2020-04-16
+### Added
+- An example cluster.yml config file
+- Additional documentation around usage and configuration
+- A TODO list
+
+### Changed
+- ClusterStack and SharedPrivateALB classes to use the new application_port config
+
 ## [0.0.1] - 2020-04-15
 ### Added
-- CDK modules for deploying a Shared ECS Cluster + ALB + Fargate Containers
+- CDK modules for deploying a Shared ECS Cluster + ALB + Fargate Containers.

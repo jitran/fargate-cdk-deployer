@@ -3,6 +3,7 @@
 vpc_id: vpc-1234567890
 ingress_security_group_ids:
   - sg-1234567890
+application_port: 8080
 
 cluster_stack_name: fargate-cluster
 

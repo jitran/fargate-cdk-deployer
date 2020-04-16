@@ -1,4 +1,4 @@
-# Fargate-CDK-Deployer
+# Fargate CDK Deployer
 
 This deploys:
   * a shared ECS Cluster
@@ -14,17 +14,22 @@ This architecture is based off Nathan Peck's [AWS Cloudformation Fargate example
 
 Follow [README.md](conf/README.md) to setup the configuration files.
 
+Build the cdk container and publish it to your registry:
+```bash
+./ci/build.sh <docker-image-uri>
+```
+
 Copy the [scripts](scripts/) directory into each of your API repositories.
 This will be the interface to the Fargate-CDK-Deployer.
 
-Deploy a Shared ECS Cluster and Load balancer:
+Deploy the Shared ECS Cluster and Load balancer stack:
 ```bash
-./scripts/deploy-cluster.sh -s <fargate-cluster-stack-name> -e <env> -d deploy/<env>.yml -a
+./scripts/deploy-cluster.sh -s <fargate-cluster-stack-name> -e <env> -d deploy/cluster/<env>.yml -a
 ```
 
-Deploy the Fargate Container:
+Deploy the Fargate Container stacks:
 ```bash
-./scripts/deploy.sh -s <fargate-container-stack-name> -e <env> -d deploy/<env>.yml -a
+./scripts/deploy.sh -s <fargate-container-stack-name> -e <env> -d deploy/fargate/<env>.yml -a
 ```
 Note: the `-a` option applies the changes. Remove the option if you wish to view the changes only.
 
@@ -60,46 +65,50 @@ Once you've implemented your changes and have written tests for it, run `./ci/ci
   * Test that your code conforms to PEP8 standards
   * Run the python test suite
 
-Build a local CDK container:
+Build the cdk container from the development branch:
 ```bash
 ./ci/build.sh
 ```
+
 Ensure the tests passes in a clean container environment by running:
 ```bash
+export BUILD_TAG=<BUILD_TAG_from_build_output>
 docker-compose run tests
 ```
 
 #### CDK tests
 
-Deploy a Shared ECS Cluster and Load balancer into your test account:
+Deploy the Shared ECS Cluster and Load balancer stack into your test account:
 ```bash
 # Using cdk directly
 export AWS_PROFILE=<env>
 export AWS_DEFAULT_REGION=<aws-region>
-cdk -a "python3 app_cluster.py -s <fargate-cluster-stack-name> -d deploy/<env>.yml" synth
-cdk -a "python3 app_cluster.py -s <fargate-cluster-stack-name> -d deploy/<env>.yml" deploy
+cdk -a "python3 app_cluster.py -s <fargate-cluster-stack-name> -d deploy/cluster/<env>.yml" synth
+cdk -a "python3 app_cluster.py -s <fargate-cluster-stack-name> -d deploy/cluster/<env>.yml" deploy
 
 # Or via the cdk container
-./scripts/deploy-cluster.sh -s <fargate-cluster-stack-name> -e <env> -d deploy/<env>.yml -a
+export BUILD_TAG=<BUILD_TAG_from_build_output>
+./scripts/deploy-cluster.sh -s <fargate-cluster-stack-name> -e <env> -d deploy/cluster/<env>.yml -a
 ```
 
-Deploy the Fargate Container into your test account:
+Deploy the Fargate Container stacks into your test account:
 ```bash
 # Using cdk directly
 export AWS_PROFILE=<env>
 export AWS_DEFAULT_REGION=<aws-region>
-cdk -a "python3 app_fargate.py -s <fargate-container-stack-name> -d deploy/<env>.yml" synth
-cdk -a "python3 app_fargate.py -s <fargate-container-stack-name> -d deploy/<env>.yml" deploy
+cdk -a "python3 app_fargate.py -s <fargate-container-stack-name> -d deploy/fargate/<env>.yml" synth
+cdk -a "python3 app_fargate.py -s <fargate-container-stack-name> -d deploy/fargate/<env>.yml" deploy
 
 # Or via the cdk container
-./scripts/deploy.sh -s <fargate-container-stack-name> -e <env> -d deploy/<env>.yml -a
+export BUILD_TAG=<BUILD_TAG_from_build_output>
+./scripts/deploy.sh -s <fargate-container-stack-name> -e <env> -d deploy/fargate/<env>.yml -a
 ```
 
 ### Release a new version
 
 Update [version.txt](version.txt) and [CHANGELOG.md](CHANGELOG.md) to reflect your changes.
 
-Now build a CDK container and publish it to your container registry:
+Build the cdk container from the master branch and publish it to your registry:
 ```bash
 ./ci/build.sh <docker-image-uri>
 ```

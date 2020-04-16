@@ -45,6 +45,10 @@ class Config:
                         item[key] = value
                     item = item[key]
 
+    def application_port(self) -> str:
+        """ Returns the application port that is available to the load balancer. """
+        return self._combined['application_port']
+
     def containers(self) -> dict:
         """ Returns a dictionary of all the container definitions.
         Data structure layout:
@@ -129,7 +133,7 @@ class Config:
         return self.containers()[self.service_name()]['health_check']['protocol']
 
     def service_name(self) -> str:
-        """ Returns the container that is registered with the load balancer. """
+        """ Returns the container name that is registered with the ECS Service. """
         return self._combined['service_name']
 
     def service_overrides(self) -> dict:
@@ -141,7 +145,7 @@ class Config:
         return self._combined['service_paths']
 
     def service_port(self) -> int:
-        """ Returns the container port that is available to the load balancer. """
+        """ Returns the container port that is registered with the ECS Service. """
         return self._combined['containers'][self.service_name()]['port']
 
     def service_priority(self) -> int:

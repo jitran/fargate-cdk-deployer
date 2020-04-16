@@ -23,3 +23,4 @@ if [ "${branch_name}" == "master" ]; then
     docker push $image_uri:latest
   fi
 fi
+echo "BUILD_TAG=${BUILD_TAG}"

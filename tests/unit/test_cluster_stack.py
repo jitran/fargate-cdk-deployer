@@ -48,9 +48,9 @@ def test_snapshot():
     assert snapshot_template == json.loads(get_template())
 
 
-def test_new_service_port():
+def test_new_application_port():
     template = get_template(
-        global_config='tests/fixtures/conf/new_service_port/global.yml'
+        global_config='tests/fixtures/conf/new_application_port/global.yml'
     )
     assert(template.count('"FromPort": 8080') == 2)
     assert(template.count('"ToPort": 8080') == 2)

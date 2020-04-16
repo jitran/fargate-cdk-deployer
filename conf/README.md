@@ -3,9 +3,9 @@
 The following configuration files form the basis of Fargate CDK Deployer.
 
 They are merged together during run time where the order of priority is:
-  1. deploy/\<environment\>.yml
-  1. vpcs.yml
-  1. global.yml
+  1. deploy
+  1. vpcs
+  1. global
 
 
 ## global.yml
@@ -18,7 +18,7 @@ Defines all the mandatory resources:
 
 Refer to [global.yml](global.yml) for a detailed description of each setting.
 
-*Note: If you're deploying via the docker-compose (deploy\*.sh scripts), changes to this config file will require a rebuild of the docker container.*
+*Note: If you're deploying via the docker-compose (deploy\*.sh scripts), changes to this config file will require a rebuild of the cdk container.*
 
 
 ## vpcs.yml
@@ -27,12 +27,23 @@ Contains Account and VPC specific configuration.
 
 Refer to [vpcs.yml](vpcs.yml) for a detailed description of each setting.
 
-*Note: If you're deploying via the docker-compose (deploy\*.sh scripts), changes to this config file will require a rebuild of the docker container.*
+*Note: If you're deploying via the docker-compose (deploy\*.sh scripts), changes to this config file will require a rebuild of the cdk container.*
 
 
-## deploy/\<environment\>.yml
+## deploy/
 
-Contains the deployment information:
+### deploy/cluster/\<env\>.yml
+
+Contains the VPC, load balancer ingress, and application port information for building a Shared ECS Cluster and Application Load balancer.
+
+This config file resides in the API repository under the deploy/cluster/ directory.
+
+Refer to [cluster.yml](examples/cluster.yml) for a detailed description of each setting.
+
+
+### deploy/fargate/\<env\>.yml
+
+Contains the Fargate Container deployment information:
   * Container definitions
   * CPU, Memory, and VPC requirements
   * Log retention days
@@ -40,7 +51,7 @@ Contains the deployment information:
   * Additional IAM permissions
   * Tags for your AWS resources
 
-This config file resides in the API repository under the deploy directory.
+This config file resides in the API repository under the deploy/fargate/ directory.
 
 Refer to [deploy.yml](examples/deploy.yml) for a detailed description of each setting.
 

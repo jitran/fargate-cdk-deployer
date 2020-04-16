@@ -1,0 +1,12 @@
+---
+
+# VPC to deploy the ECS Cluster
+vpc_id: vpc-1234567890
+
+# List of security group ids that are allowed to access the Shared ALB
+ingress_security_group_ids:
+  - sg-1234567890
+
+# Application port available to the Shared ALB
+# This must match containers.<service_name>.port
+application_port: 80

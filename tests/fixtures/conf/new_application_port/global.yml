@@ -2,6 +2,8 @@
 
 # All the mandatory resources: side car containers, roles, etc..
 
+application_port: 8080
+
 containers:
   proxy:
     port: 8080
