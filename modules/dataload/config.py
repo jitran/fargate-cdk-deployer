@@ -95,7 +95,7 @@ class Config:
         return self._combined['log_group_id']
 
     def log_retention_days(self) -> int:
-        """ Returns the number of log return days. """
+        """ Returns the number of log retention days. """
         return self._combined['log_retention_days']
 
     def private_subnet_ids(self) -> list:
@@ -125,11 +125,11 @@ class Config:
         return self._combined['desired_count']
 
     def service_health_check_path(self) -> str:
-        """ Returns the health check path used by the load balancer. """
+        """ Returns the health check path used by the TargetGroup and TaskDefinition. """
         return self.containers()[self.service_name()]['health_check']['path']
 
     def service_health_check_protocol(self) -> str:
-        """ Returns the health check protocol used by the load balancer. """
+        """ Returns the health check protocol used by the TargetGroup and TaskDefinition. """
         return self.containers()[self.service_name()]['health_check']['protocol']
 
     def service_name(self) -> str:
@@ -145,7 +145,7 @@ class Config:
         return self._combined['service_paths']
 
     def service_port(self) -> int:
-        """ Returns the container port that is registered with the ECS Service. """
+        """ Returns the container port that is registered with the ECS Service, TargetGroup, and TaskDefinition. """
         return self._combined['containers'][self.service_name()]['port']
 
     def service_priority(self) -> int:
