@@ -1,0 +1,15 @@
+---
+
+vpc_id: vpc-1234567890
+ingress_security_group_ids:
+  - sg-1234567890
+private_subnet_ids:
+  - subnet-1234567890
+  - subnet-abcdefghij
+application_port: 8443
+tags:
+  CreatedBy: team
+  CostCode: cost_code
+  BusinessDepartment: business_department
+  BusinessProduct: business_product
+  OperationalSupportTeam: support_team

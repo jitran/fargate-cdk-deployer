@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2020-04-19
+### Added
+- Tests for overriding VPC defaults and specifying new VPCs.
+
+### Changed
+- Continue parsing the configuration files when the default VPC config details are not available.
+- Test fixtures are now split into cluster and fargate container directories.
+
 ## [0.0.2] - 2020-04-16
 ### Added
 - An example cluster.yml config file

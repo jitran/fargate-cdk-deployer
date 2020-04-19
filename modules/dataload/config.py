@@ -17,24 +17,19 @@ class Config:
 
     def __init__(self, deploy_config, global_config=GLOBAL_CONFIG, vpcs_config=VPCS_CONFIG, overrides=[]):
         """ The interface to the configuration data model. """
-        self._global = Config.dataload(global_config)
-        self._deployment = Config.dataload(deploy_config)
-        self._vpcs = Config.dataload(vpcs_config)
-        self._combined = merge(
-            {},
-            self._global,
-            self._vpcs[self._deployment['vpc_id']],
-            self._deployment
-        )
-        self.configure_cli_overrides(overrides)
+        globals = Config.dataload(global_config)
+        deployment = Config.dataload(deploy_config)
+        vpcs = Config.dataload(vpcs_config)
+        vpc_id = deployment['vpc_id']
+        vpc_details = {}
 
-    def dataload(file_path) -> dict:
-        """ Loads the given yaml file into a dictionary. """
-        with open(file_path) as f:
-            return yaml.safe_load(f)
+        if vpcs and vpc_id in vpcs:
+            vpc_details = vpcs[vpc_id]
 
-    def configure_cli_overrides(self, overrides):
-        """ Applies the overrides from the command line to the config. """
+        # Combine global, vpc, and deploy config together. RHS has higher priority.
+        self._combined = merge(globals, vpc_details, deployment)
+
+        # Apply the overrides from the command line to the config
         for override in overrides:
             (path, value) = override.split('=')
             keys = path.split('.')
@@ -44,6 +39,11 @@ class Config:
                     if (index + 1) == len(keys):
                         item[key] = value
                     item = item[key]
+
+    def dataload(file_path: str) -> dict:
+        """ Loads the given yaml file into a dictionary. """
+        with open(file_path) as f:
+            return yaml.safe_load(f)
 
     def application_port(self) -> str:
         """ Returns the application port that is available to the load balancer. """

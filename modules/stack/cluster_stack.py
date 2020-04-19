@@ -22,9 +22,9 @@ class ClusterStack(core.Stack):
             id='SharedPrivateALB',
             application_port=config.application_port(),
             ingress_security_group_ids=config.ingress_security_group_ids(),
-            private_subnet_ids=config.private_subnet_ids(),
             ssl_certificate_arn=config.ssl_certificate_arn(),
             ssl_policy=config.ssl_policy(),
+            subnet_ids=config.private_subnet_ids(),
             vpc_id=config.vpc_id()
         )
 

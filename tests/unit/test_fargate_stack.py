@@ -58,7 +58,7 @@ def test_record_set_created():
 def test_invalid_permissions():
     with pytest.raises(ValueError, match="The following actions are not allowed: \\['ec2:\\*', 'iam:\\*'\\]"):
         template = get_template(
-            deploy_config='tests/fixtures/conf/invalid_permissions/deploy.yml'
+            deploy_config='tests/fixtures/conf/fargate/invalid_permissions/deploy.yml'
         )
 
 
@@ -67,11 +67,39 @@ def test_snapshot():
     assert snapshot_template == json.loads(get_template())
 
 
+def test_snapshot_with_extended_task_role():
+    template = get_template(
+        deploy_config='tests/fixtures/conf/fargate/extended_task_role/deploy.yml'
+    )
+    snapshot_template = Config.dataload('tests/fixtures/fargate_extended_task_role.template')
+    assert snapshot_template == json.loads(template)
+
+
 def test_snapshot_with_single_container():
     template = get_template(
-        global_config='tests/fixtures/conf/single_container/global.yml',
-        vpcs_config='tests/fixtures/conf/single_container/vpcs.yml',
-        deploy_config='tests/fixtures/conf/single_container/deploy.yml'
+        global_config='tests/fixtures/conf/fargate/single_container/global.yml',
+        vpcs_config='tests/fixtures/conf/fargate/single_container/vpcs.yml',
+        deploy_config='tests/fixtures/conf/fargate/single_container/deploy.yml'
+    )
+    snapshot_template = Config.dataload('tests/fixtures/fargate_single_container.template')
+    assert snapshot_template == json.loads(template)
+
+
+def test_snapshot_with_no_default_vpcs():
+    template = get_template(
+        global_config='tests/fixtures/conf/fargate/single_container/global.yml',
+        vpcs_config='tests/fixtures/conf/fargate/no_default_vpcs/vpcs.yml',
+        deploy_config='tests/fixtures/conf/fargate/no_default_vpcs/deploy.yml'
+    )
+    snapshot_template = Config.dataload('tests/fixtures/fargate_single_container.template')
+    assert snapshot_template == json.loads(template)
+
+
+def test_snapshot_with_override_vpc_defaults():
+    template = get_template(
+        global_config='tests/fixtures/conf/fargate/single_container/global.yml',
+        vpcs_config='tests/fixtures/conf/fargate/override_vpc_defaults/vpcs.yml',
+        deploy_config='tests/fixtures/conf/fargate/override_vpc_defaults/deploy.yml'
     )
     snapshot_template = Config.dataload('tests/fixtures/fargate_single_container.template')
     assert snapshot_template == json.loads(template)
@@ -79,15 +107,7 @@ def test_snapshot_with_single_container():
 
 def test_snapshot_with_overrides():
     template = get_template(
-        global_config='tests/fixtures/conf/with_overrides/global.yml'
+        global_config='tests/fixtures/conf/fargate/with_overrides/global.yml'
     )
     snapshot_template = Config.dataload('tests/fixtures/fargate_with_overrides.template')
-    assert snapshot_template == json.loads(template)
-
-
-def test_snapshot_with_extended_task_role():
-    template = get_template(
-        deploy_config='tests/fixtures/conf/extended_task_role/deploy.yml'
-    )
-    snapshot_template = Config.dataload('tests/fixtures/fargate_extended_task_role.template')
     assert snapshot_template == json.loads(template)

@@ -6,7 +6,7 @@ from aws_cdk import (
 
 class Service(core.Construct):
 
-    def __init__(self, scope: core.Construct, id: str, cluster_name, desired_count, private_subnet_ids, service_name, service_port, security_group_import_name, target_group_id, task_def_id, overrides):
+    def __init__(self, scope: core.Construct, id: str, cluster_name, desired_count, service_name, service_port, security_group_import_name, subnet_ids, target_group_id, task_def_id, overrides):
         super().__init__(scope, id)
 
         service = ecs.CfnService(
@@ -26,7 +26,7 @@ class Service(core.Construct):
                 'awsvpcConfiguration': {
                     'assignPublicIp': 'DISABLED',
                     'securityGroups': [core.Fn.import_value(security_group_import_name)],
-                    'subnets': private_subnet_ids
+                    'subnets': subnet_ids
                 }
             },
             task_definition=core.Fn.ref(task_def_id)

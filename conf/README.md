@@ -7,6 +7,8 @@ They are merged together during run time where the order of priority is:
   1. vpcs
   1. global
 
+The config settings in each tier can be overridden by the tier above it.
+
 
 ## global.yml
 
@@ -23,7 +25,7 @@ Refer to [global.yml](global.yml) for a detailed description of each setting.
 
 ## vpcs.yml
 
-Contains Account and VPC specific configuration.
+Contains Account and VPC specific configuration defaults.
 
 Refer to [vpcs.yml](vpcs.yml) for a detailed description of each setting.
 

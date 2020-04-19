@@ -55,10 +55,10 @@ class FargateStack(core.Stack):
             id='Service',
             cluster_name=config.cluster_stack_name(),
             desired_count=config.service_desired_count(),
-            private_subnet_ids=config.private_subnet_ids(),
             service_name=config.service_name(),
             service_port=config.service_port(),
             security_group_import_name=config.shared_service_security_group_export_name(),
+            subnet_ids=config.private_subnet_ids(),
             target_group_id='TargetGroup',
             task_def_id='TaskDefinition',
             overrides=config.service_overrides()

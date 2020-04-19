@@ -13,7 +13,7 @@ from modules.dataload.config import (
 
 class SharedPrivateALB(core.Construct):
 
-    def __init__(self, scope: core.Construct, id: str, application_port, ingress_security_group_ids, private_subnet_ids, ssl_certificate_arn, ssl_policy, vpc_id):
+    def __init__(self, scope: core.Construct, id: str, application_port, ingress_security_group_ids, ssl_certificate_arn, ssl_policy, subnet_ids, vpc_id):
         super().__init__(scope, id)
 
         # Use low level constructs to build security groups as it allows us to name the
@@ -61,7 +61,7 @@ class SharedPrivateALB(core.Construct):
             id='SharedLoadBalancer',
             scheme='internal',
             security_groups=[app_lb_sg.ref],
-            subnets=private_subnet_ids
+            subnets=subnet_ids
         )
         listener = elbv2.CfnListener(
             self,

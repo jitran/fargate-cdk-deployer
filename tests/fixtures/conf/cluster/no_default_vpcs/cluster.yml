@@ -1,0 +1,25 @@
+---
+
+vpc_id: vpc-1234567890
+# vpc-1234567890 is a new vpc and its details hasn't been added to vpcs.yml yet
+# begin vpc
+account_id: aws-account
+vpc_name: vpc-name
+availability_zones:
+  - ap-southeast-2a
+  - ap-southeast-2b
+private_subnet_ids:
+  - subnet-1234567890
+  - subnet-abcdefghij
+ssl_certificate_arn: arn:aws:acm:ap-southeast-2:1234567890:certificate/abcd-efgh-ijkl-mnop
+ssl_policy: ELBSecurityPolicy-2016-08
+# end vpc
+ingress_security_group_ids:
+  - sg-1234567890
+application_port: 8443
+tags:
+  CreatedBy: team
+  CostCode: cost_code
+  BusinessDepartment: business_department
+  BusinessProduct: business_product
+  OperationalSupportTeam: support_team
