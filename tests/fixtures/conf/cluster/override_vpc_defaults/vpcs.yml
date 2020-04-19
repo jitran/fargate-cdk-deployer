@@ -14,9 +14,3 @@ vpc-1234567890:
   hosted_zone_name: hosted.zone.
   ssl_certificate_arn: arn:aws:acm:ap-southeast-2:1234567890:certificate/abcd-efgh-ijkl-mnop
   ssl_policy: ELBSecurityPolicy-2016-08
-  roles:
-    TaskRole:
-      read-configuration-bucket:
-        resource: arn:aws:s3:::config-bucket/*
-      allow-config-bucket-key-decrypt:
-        resource: arn:aws:kms:ap-southeast-2:1234567890:key/abcd-efgh-ijkl-mnop
